@@ -11,17 +11,21 @@ import {
     useDisclosure
 } from "@nextui-org/react";
 import {EllipsisVertical} from "lucide-react";
-import {ProductWithCategory} from "@/lib/types";
+import {Category, ProductWithCategory} from "@/lib/types";
 import {Badge} from "@nextui-org/badge";
+import ProductAmountForm from "@/app/ui/forms/product/product-amount-form";
+import ProductForm from "@/app/ui/forms/product/product-form";
+import DeleteProductForm from "@/app/ui/forms/product/delete-product-form";
 
 interface ProductCardProps {
     product: ProductWithCategory;
+    categories: Category[];
 }
-const ProductCard = ({product}:ProductCardProps) => {
-    const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
-    const [modalType, setModalType] = React.useState<'edit' | 'delete' | null>(null);
+const ProductCard = ({product, categories}:ProductCardProps) => {
+    const {isOpen, onOpen, onClose} = useDisclosure();
+    const [modalType, setModalType] = React.useState<'edit' | 'delete' | 'increaseAmount' | 'decreaseAmount' | null>(null);
 
-    const handleOpenModal = (type: 'edit' | 'delete') => {
+    const handleOpenModal = (type: 'edit' | 'delete'| 'increaseAmount' | 'decreaseAmount') => {
         setModalType(type);
         onOpen();
     };
@@ -52,7 +56,8 @@ const ProductCard = ({product}:ProductCardProps) => {
                             <DropdownMenu
                                 aria-label="Action event example"
                             >
-                                <DropdownItem key="amount" onPress={() => handleOpenModal('edit')}>Change amount</DropdownItem>
+                                <DropdownItem key="amount" onPress={() => handleOpenModal('increaseAmount')}>Increase amount</DropdownItem>
+                                <DropdownItem key="amount" onPress={() => handleOpenModal('decreaseAmount')}>Decrease amount</DropdownItem>
                                 <DropdownItem key="edit" onPress={() => handleOpenModal('edit')}>Edit product</DropdownItem>
                                 <DropdownItem key="delete" className="text-danger" color="danger" onPress={() => handleOpenModal('delete')}>
                                     Delete product
@@ -75,14 +80,19 @@ const ProductCard = ({product}:ProductCardProps) => {
                     </CardFooter>
                 </Card>
             </Badge>
+            {modalType === 'increaseAmount' && (
+                <ProductAmountForm product={product} isOpen={isOpen} onOpenChange={handleCloseModal} increaseAmount/>
+            )}
+            {modalType === 'decreaseAmount' && (
+                <ProductAmountForm product={product} isOpen={isOpen} onOpenChange={handleCloseModal}/>
+            )}
+            {modalType === 'edit' && (
+                <ProductForm product={product} categories={categories} isOpen={isOpen} onOpenChange={handleCloseModal}/>
+            )}
 
-            {/*{modalType === 'edit' && (*/}
-            {/*    <EditproductForm product={product} isOpen={isOpen} onOpenChange={handleCloseModal} />*/}
-            {/*)}*/}
-
-            {/*{modalType === 'delete' && (*/}
-            {/*    <DeleteproductForm product={product} isOpen={isOpen} onOpenChange={handleCloseModal} />*/}
-            {/*)}*/}
+            {modalType === 'delete' && (
+                <DeleteProductForm product={product} isOpen={isOpen} onOpenChange={handleCloseModal} />
+            )}
         </>
     );
 };

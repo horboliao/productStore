@@ -7,6 +7,10 @@ export interface Category extends NewCategory{
     id: number;
 }
 
+export interface CategoryWithProductsCount extends Category{
+    amount: number;
+}
+
 export interface NewProduct {
     category: number;
     name: string;

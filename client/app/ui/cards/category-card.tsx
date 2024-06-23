@@ -1,14 +1,14 @@
 'use client'
 import React from 'react';
-import {Category} from "@/lib/types";
+import {Category, CategoryWithProductsCount} from "@/lib/types";
 import {Card, CardHeader, CardBody, CardFooter, Avatar, useDisclosure} from "@nextui-org/react";
 import {Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button} from "@nextui-org/react";
 import {EllipsisVertical} from "lucide-react";
-import EditCategoryForm from "@/app/ui/forms/category/edit-category-form";
+import CategoryForm from "@/app/ui/forms/category/category-form";
 import DeleteCategoryForm from "@/app/ui/forms/category/delete-category-form";
 
 interface CategoryCardProps {
-    category: Category
+    category: CategoryWithProductsCount
 }
 const CategoryCard = ({category}:CategoryCardProps) => {
     const {isOpen, onOpen, onOpenChange, onClose} = useDisclosure();
@@ -51,11 +51,16 @@ const CategoryCard = ({category}:CategoryCardProps) => {
                 <CardBody className="px-3 py-0 text-small text-default-400">
                     <p>{category.description}</p>
                 </CardBody>
-                <CardFooter></CardFooter>
+                <CardFooter>
+                    <div className="flex gap-1">
+                        <p className="font-semibold text-default-400 text-small">{category.amount}</p>
+                        <p className="text-default-400 text-small">products</p>
+                    </div>
+                </CardFooter>
             </Card>
 
             {modalType === 'edit' && (
-                <EditCategoryForm category={category} isOpen={isOpen} onOpenChange={handleCloseModal} />
+                <CategoryForm category={category} isOpen={isOpen} onOpenChange={handleCloseModal} />
             )}
 
             {modalType === 'delete' && (

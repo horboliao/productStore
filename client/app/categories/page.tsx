@@ -1,11 +1,11 @@
 import React from 'react';
-import {Category} from "@/lib/types";
-import {getCategories} from "@/actions/categories";
-import CategoryCard from "@/app/ui/cards/CategoryCard";
+import {Category, CategoryWithProductsCount} from "@/lib/types";
+import {getCategories, getCategoriesWithProductsCount} from "@/actions/categories";
+import CategoryCard from "@/app/ui/cards/category-card";
 import CategoryForm from "@/app/ui/forms/category/new-category-form";
 
 const Page = async () => {
-    const categories: Category[] = await getCategories();
+    const categories: CategoryWithProductsCount[] = await getCategoriesWithProductsCount();
     return (
         <div>
             <div className='flex flex-row justify-between'>

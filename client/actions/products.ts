@@ -1,6 +1,38 @@
 import {Category, Product, ProductWithCategory} from "@/lib/types";
 import {getCategories} from "@/actions/categories";
 
+export async function getProductByCategory (id: number): Promise<Product[]> {
+    const products: Product[] = [
+        {
+            id: 1,
+            category: 2, // Electronics
+            name: "Smartphone X",
+            description: "A high-end smartphone with a sleek design and powerful features.",
+            producer: "TechCorp",
+            amount: 50,
+            price: 999.99
+        },
+        {
+            id: 2,
+            category: 2, // Fashion
+            name: "Leather Jacket",
+            description: "A stylish leather jacket perfect for casual and formal wear.",
+            producer: "Fashionista",
+            amount: 100,
+            price: 199.99
+        },
+        {
+            id: 3,
+            category: 2, // Home and Kitchen
+            name: "Blender Pro",
+            description: "A high-speed blender suitable for making smoothies and soups.",
+            producer: "KitchenMaster",
+            amount: 75,
+            price: 89.99
+        }
+    ];
+    return products;
+}
 export async function getProducts (): Promise<ProductWithCategory[]> {
     const categories: Category[] = await getCategories();
     const products: Product[] = [

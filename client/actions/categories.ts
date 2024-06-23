@@ -1,4 +1,5 @@
-import {Category} from "@/lib/types";
+import {Category, CategoryWithProductsCount} from "@/lib/types";
+import {getProductByCategory} from "@/actions/products";
 
 export async function getCategories (): Promise<Category[]> {
     const categories : Category[] = [
@@ -55,4 +56,18 @@ export async function getCategories (): Promise<Category[]> {
     ];
 
     return categories;
+}
+
+export async function getCategoriesWithProductsCount(): Promise<CategoryWithProductsCount[]> {
+    const categories: Category[] = await getCategories();
+
+    const categoriesWithProductCountPromises = categories.map(async (category) => {
+        const products = await getProductByCategory(category.id);
+        return {
+            ...category,
+            amount: products.length
+        };
+    });
+
+    return Promise.all(categoriesWithProductCountPromises);
 }

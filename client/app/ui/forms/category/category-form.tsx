@@ -17,17 +17,17 @@ const formSchema = z.object({
 });
 
 interface NewCategoryForm {
-    category: Category;
+    category?: Category;
     isOpen: boolean;
     onOpenChange: () => void;
 }
-const EditCategoryForm = ({category, isOpen, onOpenChange}:NewCategoryForm) => {
+const CategoryForm = ({category, isOpen, onOpenChange}:NewCategoryForm) => {
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: category.name,
-            description: category.description
+            name: category?.name,
+            description: category?.description
         },
     });
 
@@ -110,4 +110,4 @@ const EditCategoryForm = ({category, isOpen, onOpenChange}:NewCategoryForm) => {
     );
 };
 
-export default EditCategoryForm;
+export default CategoryForm;
