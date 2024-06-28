@@ -1,6 +1,9 @@
 package clientServerApp.controllers;
 
 import clientServerApp.entity.Product;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.sql.*;
 import java.util.List;
@@ -65,28 +68,31 @@ public class ProductController {
     }
 
     public String showProducts() {
-        try {
-            String products = "[";
-            Statement st = connection.createStatement();
-            ResultSet res = st.executeQuery("SELECT * FROM products");
+        ObjectMapper mapper = new ObjectMapper();
+        ArrayNode productsArray = mapper.createArrayNode();
+
+        String query = "SELECT * FROM products";
+        try (Statement st = connection.createStatement();
+             ResultSet res = st.executeQuery(query)) {
+
             while (res.next()) {
-                String json = "{\"id\":\"" + res.getInt("id") +
-                        "\", \"name\":\"" + res.getString("name") +
-                        "\", \"price\":" + res.getDouble("price") +
-                        ", \"amount\":" + res.getInt("amount") +
-                        ", \"description\":\"" + res.getString("description") +
-                        "\", \"producer\":\"" + res.getString("producer") +
-                        "\", \"group_id\":" + res.getInt("group_id") +
-                        ", \"group_name\":\"" + dbc.getGroupName(res.getInt("group_id")) +
-                        "\", \"sum_price\":" + (res.getDouble("price") * res.getInt("amount")) + "}";
-                products += json + ", ";
+                ObjectNode productJson = mapper.createObjectNode();
+                productJson.put("id", res.getInt("id"));
+                productJson.put("name", res.getString("name"));
+                productJson.put("price", res.getDouble("price"));
+                productJson.put("amount", res.getInt("amount"));
+                productJson.put("description", res.getString("description"));
+                productJson.put("producer", res.getString("producer"));
+                productJson.put("group_id", res.getInt("group_id"));
+                String groupName = dbc != null ? dbc.getGroupName(res.getInt("group_id")) : "Unknown";
+                productJson.put("group_name", groupName);
+                double sumPrice = res.getDouble("price") * res.getInt("amount");
+                productJson.put("sum_price", sumPrice);
+                productsArray.add(productJson);
             }
-            if (products.length() > 1)
-                products = products.substring(0, products.length() - 2);
-            products += "]";
-            res.close();
-            st.close();
-            return products;
+
+            return productsArray.toString();
+
         } catch (SQLException e) {
             System.out.println("Couldn't show products.");
             e.printStackTrace();
@@ -203,23 +209,26 @@ public class ProductController {
     }
 
     public Product getProduct(Integer id) {
-        try (Statement statement = connection.createStatement()) {
-
-            String query = "SELECT * FROM products WHERE id = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        String query = "SELECT * FROM products WHERE id = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setInt(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            Product product = new Product(
-                    resultSet.getString("name"),
-                    resultSet.getDouble("price"),
-                    resultSet.getInt("amount"),
-                    resultSet.getString("description"),
-                    resultSet.getString("producer"),
-                    resultSet.getInt("group_id"));
-            return product;
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    Product product = new Product(
+                            resultSet.getString("name"),
+                            resultSet.getDouble("price"),
+                            resultSet.getInt("amount"),
+                            resultSet.getString("description"),
+                            resultSet.getString("producer"),
+                            resultSet.getInt("group_id"));
+                    return product;
+                } else {
+                    System.out.println("Product not found with id: " + id);
+                    return null;
+                }
+            }
         } catch (SQLException e) {
-            System.out.println("Couldn't get product.");
+            System.out.println("Error retrieving product: " + e.getMessage());
             return null;
         }
     }
@@ -247,6 +256,10 @@ public class ProductController {
 
     public String showProductsInGroup(Integer id) {
         try {
+            if (dbc == null) {
+                throw new IllegalStateException("DBController (dbc) is not initialized.");
+            }
+
             String products = "[";
             Statement st = connection.createStatement();
             String query = "SELECT * FROM products WHERE group_id = ?";
@@ -278,6 +291,7 @@ public class ProductController {
         }
         return null;
     }
+
 
     public double getPrice() {
         try {

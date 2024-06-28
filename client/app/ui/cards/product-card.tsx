@@ -11,14 +11,14 @@ import {
     useDisclosure
 } from "@nextui-org/react";
 import {EllipsisVertical} from "lucide-react";
-import {Category, ProductWithCategory} from "@/lib/types";
+import {Category, Product} from "@/lib/types";
 import {Badge} from "@nextui-org/badge";
 import ProductAmountForm from "@/app/ui/forms/product/product-amount-form";
 import ProductForm from "@/app/ui/forms/product/product-form";
 import DeleteProductForm from "@/app/ui/forms/product/delete-product-form";
 
 interface ProductCardProps {
-    product: ProductWithCategory;
+    product: Product;
     categories: Category[];
 }
 const ProductCard = ({product, categories}:ProductCardProps) => {
@@ -40,7 +40,6 @@ const ProductCard = ({product, categories}:ProductCardProps) => {
                 <Card className='w-full'>
                     <CardHeader className="justify-between">
                         <div>
-                            <p className="text-xs text-default-400">{product.category.toUpperCase()}</p>
                             <h3 className='font-semibold'>{product.name}</h3>
                         </div>
                         <Dropdown>

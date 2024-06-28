@@ -4,23 +4,26 @@ import * as z from "zod";
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Button, Input, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
-import { ProductWithCategory} from "@/lib/types";
+import { Product} from "@/lib/types";
+import {updateProduct} from "@/actions/products";
+import {useRouter} from "next/navigation";
 
 const formSchema = z.object({
     amount: z.coerce.number().positive(),
 });
 
 interface ProductAmountFormProps {
-    product: ProductWithCategory;
+    product: Product;
     increaseAmount?: boolean;
     isOpen: boolean;
     onOpenChange: () => void;
 }
 const ProductAmountForm = ({product, increaseAmount, isOpen, onOpenChange}:ProductAmountFormProps) => {
+    const router = useRouter();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            amount: 1
+            amount: 1,
         },
     });
 
@@ -28,7 +31,22 @@ const ProductAmountForm = ({product, increaseAmount, isOpen, onOpenChange}:Produ
     const { isSubmitting, isValid } = form.formState;
     const amount = form.watch('amount');
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values)
+        const newAmount:number = increaseAmount ? product.amount + values.amount : product.amount - values.amount;
+        if (newAmount < 0) {
+            alert("Amount cannot be negative");
+            return;
+        }
+
+        const updatedProduct = {
+            name: product.name,
+            price: product.price,
+            amount: newAmount,
+            description: product.description,
+            producer: product.producer,
+            group_id: product.group_id,
+        };
+        await updateProduct(product.id, updatedProduct);
+        router.refresh();
     }
     return (
         <Modal

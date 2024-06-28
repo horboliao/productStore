@@ -3,14 +3,14 @@ import Image from "next/image";
 import CategoryForm from "@/app/ui/forms/category/new-category-form";
 import React from "react";
 import {getProducts} from "@/actions/products";
-import {Category, ProductWithCategory} from "@/lib/types";
+import {Category, Product} from "@/lib/types";
 import ProductCard from "@/app/ui/cards/product-card";
 import {getCategories} from "@/actions/categories";
 import NewProductForm from "@/app/ui/forms/product/new-product-form";
 import ProductList from "@/app/ui/lists/product-list";
 
 export default async function Home() {
-    const products: ProductWithCategory[] = await getProducts();
+    const products: Product[] = await getProducts();
     const categories: Category[] = await getCategories();
 
     return (

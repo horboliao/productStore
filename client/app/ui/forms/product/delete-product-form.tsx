@@ -1,15 +1,21 @@
 import React from 'react';
-import {Category, ProductWithCategory} from "@/lib/types";
+import {Category, Product} from "@/lib/types";
 import {Button, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader} from "@nextui-org/react";
+import {useRouter} from "next/navigation";
+import {deleteCategory} from "@/actions/categories";
+import {deleteProduct} from "@/actions/products";
 
 interface DeleteProductForm {
-    product: ProductWithCategory;
+    product: Product;
     isOpen: boolean;
     onOpenChange: () => void;
 }
 const DeleteProductForm = ({product, isOpen, onOpenChange}:DeleteProductForm) => {
-    function onDelete() {
-        console.log(product.id)
+    const router = useRouter();
+
+    async function onDelete() {
+        await deleteProduct(product.id)
+        router.refresh();
     }
 
     return (
@@ -24,7 +30,6 @@ const DeleteProductForm = ({product, isOpen, onOpenChange}:DeleteProductForm) =>
                         <ModalHeader className="flex flex-col gap-1">Delete Product</ModalHeader>
                         <ModalBody>
                             <div>
-                                <p className="text-xs text-default-400">{product.category.name.toUpperCase()}</p>
                                 <h3 className='font-semibold'>{product.name}</h3>
                             </div>
                             <p className="text-small text-default-400">{product.description}</p>

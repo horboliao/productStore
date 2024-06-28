@@ -20,11 +20,11 @@ public class DBController {
     }
     public DBController(String fileName) {
         try {
-            String url = "jdbc:postgresql://localhost:5432/goods";
-            String user = "test_user";
-            String password = "test_password33";
-            connection = DriverManager.getConnection(url, user, password);
+            Class.forName("org.postgresql.Driver");
+            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
 
@@ -35,7 +35,7 @@ public class DBController {
         initProductTable();
     }
 
-    private void initProductTable() {
+    public void initProductTable() {
         try {
             PreparedStatement st = connection.prepareStatement("CREATE TABLE IF NOT EXISTS products " +
                     "(id SERIAL PRIMARY KEY, " +
@@ -52,7 +52,7 @@ public class DBController {
         }
     }
 
-    private void initGroupTable() {
+    public void initGroupTable() {
         try {
             PreparedStatement st = connection.prepareStatement("CREATE TABLE IF NOT EXISTS groups " +
                     "(id SERIAL PRIMARY KEY, " +
@@ -101,7 +101,7 @@ public class DBController {
 
     public void deleteGroups(){
         try(Statement statement = connection.createStatement()){
-            String query = "DELETE FROM 'groups'";
+            String query = "DELETE FROM groups";
             statement.execute(query);
         } catch (SQLException e) {
             System.out.println("Couldn't delete groups.");
@@ -110,7 +110,7 @@ public class DBController {
 
     public void deleteProducts(){
         try(Statement statement = connection.createStatement()){
-            String query = "DELETE FROM 'products'";
+            String query = "DELETE FROM products";
             statement.execute(query);
         } catch (SQLException e) {
             System.out.println("Couldn't delete products.");
@@ -119,14 +119,14 @@ public class DBController {
 
     public void dropTables(){
         try(Statement statement = connection.createStatement()){
-            String query = "drop table 'products'";
+            String query = "drop table products";
             statement.execute(query);
         } catch (SQLException e) {
             System.out.println("Couldn't drop tables.");
         }
 
         try(Statement statement = connection.createStatement()){
-            String query = "drop table 'groups'";
+            String query = "drop table groups";
             statement.execute(query);
         } catch (SQLException e) {
             System.out.println("Couldn't drop tables.");
@@ -195,6 +195,7 @@ public class DBController {
     public String getPrice() {
         return String.valueOf(productController.getPrice());
     }
+
 
     public String getProductsPrice(Integer id) {
         return String.valueOf(productController.getPriceInGroup(id));

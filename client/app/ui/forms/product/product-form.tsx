@@ -1,6 +1,6 @@
 import React from 'react';
 import * as z from "zod";
-import {Category, ProductWithCategory} from "@/lib/types";
+import {Category, Product} from "@/lib/types";
 import {Controller, useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {
@@ -15,7 +15,7 @@ import {
     SelectItem
 } from "@nextui-org/react";
 import {Textarea} from "@nextui-org/input";
-import {createProduct} from "@/actions/products";
+import {createProduct, updateProduct} from "@/actions/products";
 import {useRouter} from "next/navigation";
 
 const formSchema = z.object({
@@ -29,11 +29,11 @@ const formSchema = z.object({
         message: "Producer is required",
     }),
     amount: z.coerce.number().positive(),
-    category: z.coerce.number(),
+    group_id: z.coerce.number(),
     price: z.coerce.number().positive(),
 });
 interface ProductFormProps {
-    product?: ProductWithCategory;
+    product?: Product;
     categories: Category[];
     isOpen: boolean;
     onOpenChange: () => void;
@@ -48,7 +48,7 @@ const ProductForm = ({product, categories, onOpenChange, isOpen}:ProductFormProp
             producer: product?.producer,
             amount: product?.amount,
             price: product?.price,
-            category: product?.category.id
+            group_id: product?.group_id
         },
     });
 
@@ -56,7 +56,8 @@ const ProductForm = ({product, categories, onOpenChange, isOpen}:ProductFormProp
     const { isSubmitting, isValid } = form.formState;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
        if(product) {
-
+           await updateProduct(product.id, values);
+           router.refresh();
        } else {
            await createProduct(values);
            router.refresh();
@@ -127,7 +128,7 @@ const ProductForm = ({product, categories, onOpenChange, isOpen}:ProductFormProp
                                             label="Category"
                                             isDisabled = {isSubmitting}
                                             errorMessage={fieldState.error?.message}
-                                            selectedKeys={[product?.category.id.toString()]}
+                                            selectedKeys={[product?.group_id.id.toString()]}
                                             items={categories}
                                             onChange={(e) => { field.onChange(e); }}
                                         >

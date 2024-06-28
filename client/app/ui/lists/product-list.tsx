@@ -1,12 +1,12 @@
 'use client'
 import React, {useEffect, useState} from 'react';
 import ProductCard from "@/app/ui/cards/product-card";
-import {Category, ProductWithCategory} from "@/lib/types";
+import {Category, Product} from "@/lib/types";
 import {Input, Select, SelectItem} from "@nextui-org/react";
 import {useSession} from "next-auth/react";
 
 interface ProductListProps {
-    products: ProductWithCategory[];
+    products: Product[];
     categories: Category[];
 }
 const ProductList = ({products, categories}:ProductListProps) => {
@@ -19,7 +19,7 @@ const ProductList = ({products, categories}:ProductListProps) => {
 
     const filteredProducts = products.filter(product => {
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
+        const matchesCategory = selectedCategory ? product.group_id === selectedCategory : true;
         return matchesSearch && matchesCategory;
     });
 

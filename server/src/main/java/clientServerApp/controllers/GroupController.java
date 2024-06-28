@@ -29,7 +29,7 @@ public class GroupController {
         return -1;
     }
 
-    String showGroups(){
+    public String showGroups(){
         try{
             String groups = "[";
             Statement st = connection.createStatement();
@@ -86,13 +86,13 @@ public class GroupController {
         }
     }
 
-    boolean exists(String name){
+    public boolean exists(String name){
         try (Statement statement = connection.createStatement()) {
-            String query = "SELECT * FROM groups WHERE name = '" + name + "'";
+            String query = String.format("SELECT * FROM groups WHERE name = '%s'", name);
             ResultSet resultSet = statement.executeQuery(query);
             return resultSet.next();
         } catch (SQLException e) {
-            System.out.println("Couldn't check if product exists.");
+            System.out.println("Couldn't check if group exists.");
             return false;
         }
     }
@@ -142,18 +142,23 @@ public class GroupController {
         }
     }
 
-    public Group getGroup(Integer id){
-        try(Statement statement = connection.createStatement()){
-            String query = String.format("SELECT * FROM groups WHERE id = %s", id);
-            ResultSet resultSet = statement.executeQuery(query);
+    public Group getGroup(Integer id) {
+        String query = String.format("SELECT * FROM groups WHERE id = %d", id);
 
-            Group group = new Group(
-                    resultSet.getString("name"),
-                    resultSet.getString("description"));
-            return group;
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(query)) {
+            if (resultSet.next()) {
+                String name = resultSet.getString("name");
+                String description = resultSet.getString("description");
+                return new Group(name, description);
+            } else {
+                System.out.println("No group found with id: " + id);
+                return null;
+            }
         } catch (SQLException e) {
-            System.out.println("Couldn't get product.");
+            System.out.println("Couldn't get group: " + e.getMessage());
             return null;
         }
     }
+
 }
