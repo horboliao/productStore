@@ -6,6 +6,8 @@ import {Controller, useForm} from "react-hook-form";
 import {Category} from "@/lib/types";
 import {Textarea} from "@nextui-org/input";
 import {zodResolver} from "@hookform/resolvers/zod";
+import {useRouter} from "next/navigation";
+import {createCategory, updateCategory} from "@/actions/categories";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -22,6 +24,7 @@ interface NewCategoryForm {
     onOpenChange: () => void;
 }
 const CategoryForm = ({category, isOpen, onOpenChange}:NewCategoryForm) => {
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -35,15 +38,13 @@ const CategoryForm = ({category, isOpen, onOpenChange}:NewCategoryForm) => {
     const { isSubmitting, isValid } = form.formState;
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values)
-        // try {
-        //     await axios.patch(`/api/courses/${courseId}`, values);
-        //     toast.success("Назву курсу оновлено");
-        //     toggleEdit();
-        //     router.refresh();
-        // } catch {
-        //     toast.error("Не вдалось оновити назву курс");
-        // }
+        if (!category) {
+            await createCategory(values)
+            router.refresh();
+        } else {
+            await updateCategory(category.id, values)
+            router.refresh();
+        }
     }
     return (
         <>

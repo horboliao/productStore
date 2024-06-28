@@ -1,14 +1,19 @@
 import React from 'react';
 import {Category} from "@/lib/types";
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure} from "@nextui-org/react";
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button} from "@nextui-org/react";
+import {deleteCategory, updateCategory} from "@/actions/categories";
+import {useRouter} from "next/navigation";
 interface CategoryForm {
     category: Category;
     isOpen: boolean;
     onOpenChange: () => void;
 }
 const DeleteCategoryForm = ({category, isOpen, onOpenChange}:CategoryForm) => {
-    function onDelete() {
-        console.log(category.id)
+    const router = useRouter();
+
+    async function onDelete() {
+        await deleteCategory(category.id)
+        router.refresh();
     }
 
     return (

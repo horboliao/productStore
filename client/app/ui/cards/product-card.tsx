@@ -36,11 +36,11 @@ const ProductCard = ({product, categories}:ProductCardProps) => {
     };
     return (
         <>
-            <Badge content={product.amount} color="primary" size='sm'>
-                <Card>
+            <Badge content={product.amount} color="primary">
+                <Card className='w-full'>
                     <CardHeader className="justify-between">
                         <div>
-                            <p className="text-xs text-default-400">{product.category.name.toUpperCase()}</p>
+                            <p className="text-xs text-default-400">{product.category.toUpperCase()}</p>
                             <h3 className='font-semibold'>{product.name}</h3>
                         </div>
                         <Dropdown>

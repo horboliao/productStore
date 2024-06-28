@@ -4,7 +4,7 @@ export interface NewCategory  {
 }
 
 export interface Category extends NewCategory{
-    id: number;
+    id: number|string;
 }
 
 export interface CategoryWithProductsCount extends Category{
@@ -21,12 +21,12 @@ export interface NewProduct {
 }
 
 export interface Product extends NewProduct{
-    id: number;
+    id: number|string;
 }
 
 export interface ProductWithCategory{
     id: number;
-    category: Category;
+    category: string;
     name: string;
     description: string;
     producer: string;

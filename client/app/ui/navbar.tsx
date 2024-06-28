@@ -1,5 +1,7 @@
+'use client'
 import React from 'react';
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react";
+import { signOut } from "next-auth/react"
 
 const NavigationPanel = () => {
     return (
@@ -21,7 +23,7 @@ const NavigationPanel = () => {
             </NavbarContent>
             <NavbarContent justify="end">
                 <NavbarItem>
-                    <Button as={Link} color="danger" variant="flat">
+                    <Button onPress={() => signOut()} color="danger" variant="flat">
                        Log out
                     </Button>
                 </NavbarItem>

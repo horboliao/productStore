@@ -15,6 +15,8 @@ import {
     SelectItem
 } from "@nextui-org/react";
 import {Textarea} from "@nextui-org/input";
+import {createProduct} from "@/actions/products";
+import {useRouter} from "next/navigation";
 
 const formSchema = z.object({
     name: z.string().min(1, {
@@ -37,6 +39,7 @@ interface ProductFormProps {
     onOpenChange: () => void;
 }
 const ProductForm = ({product, categories, onOpenChange, isOpen}:ProductFormProps) => {
+    const router = useRouter();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -52,7 +55,12 @@ const ProductForm = ({product, categories, onOpenChange, isOpen}:ProductFormProp
     const { handleSubmit, control } = form;
     const { isSubmitting, isValid } = form.formState;
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        console.log(values)
+       if(product) {
+
+       } else {
+           await createProduct(values);
+           router.refresh();
+       }
     }
 
     return (
